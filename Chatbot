@@ -1,27 +1,26 @@
 import pandas as pd
 #pip install openpyxl and pandas
 
-chatbot_data = pd.read_csv("/Users/Macintosh/Desktop/chatbot_data.csv", encoding='utf-8')
-# rule의 데이터를 split하여 list형태로 변환 후, index값과 함께 dictionary 형태로 저장
-chat_dic = {}
+chatbot_data = pd.read_csv("/Users/Macintosh/Desktop/chatbot.csv", encoding='utf-8')
+# split the data in rule and save as a list
 row = 0
 for rule in chatbot_data['rule']:
-    chat_dic[row] = rule.split('|')
+    chat_list[row] = rule.split('|')
     row += 1
 
 def chat(request):
-    for k, v in chat_dic.items():
+    for k in chat_list:
         index = -1
-        for word in v:
+        for word in chat_list[k]:
             try:
                 if index == -1:
                     index = request.index(word)
                 else:
-                # 이전 index 값은 현재 index값보다 이전이어야 한다.
+                # Previous index value must be less than the current index value
                     if index < request.index(word, index): 
                         index = request.index(word, index)
                     else:
-                    # index 값이 이상할 경우 과감하게 break를 한다
+                    # If the value of index is weird, break.
                         index = -1
                         break
             except ValueError:
@@ -29,10 +28,10 @@ def chat(request):
                 break
             if index > -1:
                 return chatbot_data['response'][k]
-        return '무슨 말인지 모르겠어요'
+    return 'I don't know what you are saying
 
 while True:
-    req = input('대화를 입력해보세요.')
+    req = input('input a request.')
     if req == 'exit':
         break
     else:
